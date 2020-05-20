@@ -98,7 +98,7 @@ function notificationResultAndContext(resultDescription: any) {
  *
  * @typedef {'max' | 'recent' | 'root' | 'single'} Commitment
  */
-export type Commitment = 'max' | 'recent' | 'root' | 'single';
+export type Commitment = 'max' | 'recent' | 'root' | 'single' | 'singleGossip';
 
 /**
  * Configuration object for changing query behavior
@@ -727,6 +727,7 @@ type AccountSubscriptionInfo = {
   publicKey: string, // PublicKey of the account as a base 58 string
   callback: AccountChangeCallback,
   subscriptionId: ?SubscriptionId, // null when there's no current server subscription id
+  commitment: ?Commitment,
 };
 
 /**
@@ -1704,7 +1705,8 @@ export class Connection {
 
     for (let id of accountKeys) {
       const sub = this._accountChangeSubscriptions[id];
-      this._subscribe(sub, 'accountSubscribe', [sub.publicKey]);
+      const commitment = sub.commitment;
+      this._subscribe(sub, 'accountSubscribe', [sub.publicKey, {commitment}]);
     }
 
     for (let id of programKeys) {
@@ -1767,6 +1769,7 @@ export class Connection {
    */
   onAccountChange(
     publicKey: PublicKey,
+    commitment: Commitment,
     callback: AccountChangeCallback,
   ): number {
     const id = ++this._accountChangeSubscriptionCounter;
@@ -1774,6 +1777,7 @@ export class Connection {
       publicKey: publicKey.toBase58(),
       callback,
       subscriptionId: null,
+      commitment,
     };
     this._updateSubscriptions();
     return id;

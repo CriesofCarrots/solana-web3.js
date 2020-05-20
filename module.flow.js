@@ -59,7 +59,7 @@ declare module '@solana/web3.js' {
     value: T,
   };
 
-  declare export type Commitment = 'max' | 'recent' | 'root' | 'single';
+  declare export type Commitment = 'max' | 'recent' | 'root' | 'single' | 'singleGossip';
 
   declare export type SignatureStatusConfig = {
     searchTransactionHistory: boolean,
@@ -266,6 +266,7 @@ declare module '@solana/web3.js' {
     ): Promise<TransactionSignature>;
     onAccountChange(
       publickey: PublicKey,
+      commitment: Commitment,
       callback: AccountChangeCallback,
     ): number;
     removeAccountChangeListener(id: number): Promise<void>;
